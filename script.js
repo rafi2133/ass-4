@@ -1,10 +1,9 @@
-// State Management
 let interviewCount = 0;
 let rejectedCount = 0;
 let totalJobs = 8;
 let currentFilter = 'all';
 
-// Get DOM Elements
+
 const interviewCountEl = document.getElementById('interview-dashBoard');
 const rejectedCountEl = document.getElementById('rejected-dashBoard');
 const totalCountEl = document.getElementById('totalCount');
@@ -13,26 +12,29 @@ const emptyInterviewSection = document.getElementById('empty-job-apply');
 const emptyRejectedSection = document.getElementById('empty-job-reject');
 const jobsSection = document.querySelector('.jobs');
 
-// Get Filter Buttons
+
 const filterAllBtn = document.getElementById('filter-btn-all');
 const filterInterviewBtn = document.getElementById('filter-btn-interview');
 const filterRejectedBtn = document.getElementById('filter-btn-rejected');
 
-// Helper Function - Update Dashboard
+
+
 function updateDashboard() {
     totalCountEl.innerText = totalJobs;
     interviewCountEl.innerText = interviewCount;
     rejectedCountEl.innerText = rejectedCount;
 }
 
-// Helper Function - Set Active Filter Button
+
 function setActiveFilter(filter) {
     currentFilter = filter;
+    
     
     filterAllBtn.classList.remove('bg-[#002C5C]', 'text-white');
     filterInterviewBtn.classList.remove('bg-[#002C5C]', 'text-white');
     filterRejectedBtn.classList.remove('bg-[#002C5C]', 'text-white');
     
+   
     if(filter === 'all') {
         filterAllBtn.classList.add('bg-[#002C5C]', 'text-white');
     }
@@ -44,16 +46,7 @@ function setActiveFilter(filter) {
     }
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Commit 1: Dashboard initialized');
-    updateDashboard();
-    setActiveFilter('all');
-});
 
-
-
-// Handle Interview Click
 function handleInterviewClick(jobId) {
     const jobCard = document.getElementById(jobId);
     if(!jobCard) {
@@ -61,17 +54,20 @@ function handleInterviewClick(jobId) {
         return;
     }
 
+   
     const badges = jobCard.querySelectorAll('.badge');
     const notAppliedBadge = badges[0];
     const appliedBadge = badges[1];
     const rejectedBadge = badges[2];
     
+  
     if(!appliedBadge.classList.contains('hidden')) {
         alert('Already marked as Interview');
         return;
     }
     
     if(!rejectedBadge.classList.contains('hidden')) {
+        
         rejectedCount--;
         interviewCount++;
         
@@ -82,6 +78,7 @@ function handleInterviewClick(jobId) {
         alert('Job moved from Rejected to Interview');
     } 
     else {
+        
         interviewCount++;
         
         notAppliedBadge.classList.add('hidden');
@@ -91,9 +88,10 @@ function handleInterviewClick(jobId) {
     }
     
     updateDashboard();
+    applyFilter(currentFilter);
 }
 
-// Handle Reject Click
+
 function handleRejectClick(jobId) {
     const jobCard = document.getElementById(jobId);
     if(!jobCard) {
@@ -101,10 +99,12 @@ function handleRejectClick(jobId) {
         return;
     }
 
+    
     const badges = jobCard.querySelectorAll('.badge');
     const notAppliedBadge = badges[0];
     const appliedBadge = badges[1];
     const rejectedBadge = badges[2];
+    
     
     if(!rejectedBadge.classList.contains('hidden')) {
         alert('Already marked as Rejected');
@@ -112,6 +112,7 @@ function handleRejectClick(jobId) {
     }
     
     if(!appliedBadge.classList.contains('hidden')) {
+        
         interviewCount--;
         rejectedCount++;
         
@@ -122,6 +123,7 @@ function handleRejectClick(jobId) {
         alert('Job moved from Interview to Rejected');
     } 
     else {
+       
         rejectedCount++;
         
         notAppliedBadge.classList.add('hidden');
@@ -131,9 +133,10 @@ function handleRejectClick(jobId) {
     }
     
     updateDashboard();
+    applyFilter(currentFilter);
 }
 
-// Handle Delete Click
+
 function handleDeleteClick(jobId) {
     const jobCard = document.getElementById(jobId);
     if(!jobCard) {
@@ -141,6 +144,7 @@ function handleDeleteClick(jobId) {
         return;
     }
 
+    
     const badges = jobCard.querySelectorAll('.badge');
     const appliedBadge = badges[1];
     const rejectedBadge = badges[2];
@@ -152,15 +156,108 @@ function handleDeleteClick(jobId) {
         rejectedCount--;
     }
     
+    
     jobCard.remove();
     totalJobs--;
     
     updateDashboard();
     alert('Job Deleted Successfully');
+    
+    
+    if(totalJobs === 0) {
+        jobsSection.classList.add('hidden');
+        emptyJobsSection.classList.remove('hidden');
+        emptyInterviewSection.classList.add('hidden');
+        emptyRejectedSection.classList.add('hidden');
+    } 
+    else {
+        applyFilter(currentFilter);
+    }
 }
 
-// Setup Event Listeners for Job Cards
-function setupJobCardListeners() {
+
+function applyFilter(filter) {
+    currentFilter = filter;
+    
+   
+    emptyJobsSection.classList.add('hidden');
+    emptyInterviewSection.classList.add('hidden');
+    emptyRejectedSection.classList.add('hidden');
+    
+    if(totalJobs === 0) {
+        jobsSection.classList.add('hidden');
+        emptyJobsSection.classList.remove('hidden');
+        setActiveFilter(filter);
+        return;
+    }
+
+    jobsSection.classList.remove('hidden');
+    const jobCards = document.querySelectorAll('.job-card');
+    let visibleCount = 0;
+    let interviewVisible = 0;
+    let rejectedVisible = 0;
+
+    jobCards.forEach(function(card) {
+        const badges = card.querySelectorAll('.badge');
+        const appliedBadge = badges[1];
+        const rejectedBadge = badges[2];
+        
+        const isInterview = !appliedBadge.classList.contains('hidden');
+        const isRejected = !rejectedBadge.classList.contains('hidden');
+        
+        let shouldShow = false;
+        
+        if(filter === 'all') {
+            shouldShow = true;
+        }
+        else if(filter === 'interview') {
+            shouldShow = isInterview;
+            if(isInterview) {
+                interviewVisible++;
+            }
+        }
+        else if(filter === 'rejected') {
+            shouldShow = isRejected;
+            if(isRejected) {
+                rejectedVisible++;
+            }
+        }
+        
+        if(shouldShow) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } 
+        else {
+            card.classList.add('hidden');
+        }
+    });
+
+  
+    if(filter === 'all') {
+        if(visibleCount === 0) {
+            jobsSection.classList.add('hidden');
+            emptyJobsSection.classList.remove('hidden');
+        }
+    }
+    else if(filter === 'interview') {
+        if(interviewVisible === 0) {
+            jobsSection.classList.add('hidden');
+            emptyInterviewSection.classList.remove('hidden');
+        }
+    }
+    else if(filter === 'rejected') {
+        if(rejectedVisible === 0) {
+            jobsSection.classList.add('hidden');
+            emptyRejectedSection.classList.remove('hidden');
+        }
+    }
+    
+    setActiveFilter(filter);
+}
+
+
+function setupEventListeners() {
+    
     // Interview buttons
     document.getElementById('interview-btn-one').addEventListener('click', function() {
         handleInterviewClick('job1');
@@ -259,12 +356,24 @@ function setupJobCardListeners() {
     document.getElementById('delete-btn-eight').addEventListener('click', function() {
         handleDeleteClick('job8');
     });
+    
+    // Filter buttons
+    filterAllBtn.addEventListener('click', function() {
+        applyFilter('all');
+    });
+    
+    filterInterviewBtn.addEventListener('click', function() {
+        applyFilter('interview');
+    });
+    
+    filterRejectedBtn.addEventListener('click', function() {
+        applyFilter('rejected');
+    });
 }
 
-// Update initialization
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Commit 2: Job card interactions added');
     updateDashboard();
-    setActiveFilter('all');
-    setupJobCardListeners();
+    setupEventListeners();
+    applyFilter('all');
 });
