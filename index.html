@@ -41,12 +41,23 @@
   <body class="w-10/12 mx-auto bg-[#EEF4FF] pt-10">
 
 
-      <button id="interview-btn-four" class="btn btn-outline btn-accent bg-white">
-        interview
-      </button>
-      <button id="rejected-btn-four" class="btn btn-outline btn-error bg-white">
-        Rejected
-      </button>
+      <!--section of jobApplicationTracker -->
+    <section class="dashBoard">
+        <div class="dashBoard-container grid grid-cols-3  gap-3 p-5">
+        <div class="total bg-white p-4">
+            <h4>Total</h4>
+            <h2 id="totalCount" class="font-semibold text-[1.5rem]">8</h2>
+        </div>
+        <div class="interview bg-white p-4">
+            <h4>Interview</h4>
+            <h2 id="interview-dashBoard" class="text-[#1dad35] font-semibold text-[1.5rem]">0</h2>
+        </div>
+        <div class="rejected bg-white p-4">
+            <h4>Rejected</h4>
+            <h2 id="rejected-dashBoard" class="text-[#ad1a1a] font-semibold text-[1.5rem]">0</h2>
+        </div>
+        </div>
+    </section>
  
   </body>
 </html>
